@@ -1,0 +1,167 @@
+# Ablation Study Configuration
+# =============================
+# This file defines all experimental parameters for reproducibility
+
+# Experiment metadata
+experiment:
+  name: "hit_discovery_ablation"
+  version: "1.1"
+  description: "Ablation study of acquisition methods -- single-target toy and multi-target GeneDisco"
+
+# Dataset configurations
+datasets:
+  sine:
+    type: "synthetic"
+    n_samples: 300
+    n_features: 1
+    function: "sine"
+    noise_std: 0.1
+    description: "1D sinusoidal function"
+
+  sine2d:
+    type: "synthetic"
+    n_samples: 300
+    n_features: 2
+    function: "sine2d"
+    noise_std: 0.1
+    description: "2D sinusoidal function"
+
+  branin:
+    type: "synthetic"
+    n_samples: 300
+    n_features: 2
+    function: "branin"
+    noise_std: 0.0
+    description: "Branin-Hoo test function (multi-modal)"
+
+  perturbation_pathways:
+    type: "synthetic"
+    n_samples: 300
+    n_features: 4
+    function: "perturbation_pathways"
+    noise_std: 0.05
+    description: "Pathway-based perturbation model"
+
+  perturbation_sem:
+    type: "synthetic"
+    n_samples: 300
+    n_features: 6
+    function: "perturbation_sem"
+    noise_std: 0.05
+    description: "Structural equation model for gene perturbations"
+
+# Acquisition methods
+methods:
+  probability_hit:
+    description: "P(y > threshold) from GP posterior"
+    type: "probabilistic"
+
+  thompson_hit:
+    description: "Thompson sampling with hit indicator"
+    type: "thompson"
+
+  thompson_sampling:
+    description: "Standard Thompson sampling on predicted value"
+    type: "thompson"
+
+  top_k:
+    description: "Greedy selection by predicted mean"
+    type: "greedy"
+
+  random:
+    description: "Uniform random baseline"
+    type: "baseline"
+
+# Experimental parameters
+parameters:
+  batch_sizes: [5, 10]
+  thresholds_pct: [5, 10] # Percentage of points considered "hits"
+  seeds: [42, 43, 44]
+  n_cycles: 10 # Number of acquisition cycles
+  n_initial: 22 # Initial random samples
+
+# GP model configuration
+gp_model:
+  kernel: "RBF"
+  lengthscale_prior: "gamma"
+  noise_prior: "gamma"
+  optimizer: "adam"
+  n_iterations: 100
+  learning_rate: 0.1
+
+# Output configuration
+output:
+  save_intermediate: true
+  save_gp_models: false # Set to true if you need to inspect models
+  metrics:
+    - "RecoveredHitsRatio_Cumulative"
+    - "SMAPE_Unseen"
+    - "SpearmanRho"
+    - "HitClusters_RecoveryRatio"
+
+# Complexity analysis
+complexity:
+  clustering:
+    method: "dbscan"
+    eps: 0.5
+    min_samples: 2
+  metrics:
+    - "n_features"
+    - "local_smoothness"
+    - "hit_spread"
+    - "n_hit_clusters"
+    - "distance_y_correlation"
+
+# Reproducibility settings
+reproducibility:
+  deterministic: true
+  torch_seed: true
+  numpy_seed: true
+  warn_on_nondeterministic: true
+
+# ── Multi-target GeneDisco experiments ────────────────────────────────────────
+# Each target runs an independent GP; batch_size is split equally among targets.
+# This is the naive baseline against which the maehd/ai agent framework is compared.
+multitarget:
+  # Available setups (defined in maehd/datasets/genedisco.py MULTI_TARGET_SETUPS)
+  setups:
+    t_cell:
+      screens: ["schmidt_2021_ifng", "schmidt_2021_il2"]
+      description: "Correlated immune targets -- same lab, same cell type"
+      K: 2
+
+    all_immune:
+      screens: ["schmidt_2021_ifng", "schmidt_2021_il2", "zhuang_2019_nk"]
+      description: "Three immune phenotypes"
+      K: 3
+
+    cross_biology:
+      screens: ["sanchez_2021_tau", "zhu_2021_sarscov2"]
+      description: "Unrelated biology -- neuron tau and SARS-CoV-2"
+      K: 2
+
+  # Feature sets to use for gene embeddings
+  feature_sets: ["achilles", "string"]
+
+  # Acquisition methods (same as single-target; applied independently per target)
+  methods: ["probability_hit", "thompson_hit", "random"]
+
+  # Experimental parameters
+  parameters:
+    batch_size: 20           # total genes queried per cycle (split equally per target)
+    threshold_pct: 0.10      # top-10% = hits
+    seeds: [42, 43, 44]
+    n_cycles: 15
+    n_initial: 10            # random seed observations before cycle 1
+
+  # GP model (same as single-target)
+  gp_model:
+    n_iterations: 100
+    learning_rate: 0.1
+
+  # Output metrics (per-target + aggregates)
+  metrics:
+    - "recall_{target}"        # per-target RecoveredHitsRatio
+    - "mean_recall"            # mean across targets
+    - "any_target_recall"      # fraction of union-of-hits recovered
+    - "all_target_recall"      # fraction of intersection-of-hits recovered

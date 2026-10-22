@@ -1,0 +1,9 @@
+# python == 3.10
+numpy
+scikit-learn
+matplotlib
+seaborn
+genedisco
+gpytorch
+# bundled fork of slingpy (install with: pip install -e ./slingpy)
+# slingpy

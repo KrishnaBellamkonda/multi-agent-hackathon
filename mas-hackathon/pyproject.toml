@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mas-hackathon"
+version = "0.1.0"
+description = "Multi-agent system for multi-target CRISPR gene-hit discovery"
+readme = "README.md"
+license = { text = "GPL-3.0" }
+authors = [{ name = "Andrea Rubbi", email = "ar36@sanger.ac.uk" }]
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "scikit-learn>=1.3",
+    "h5py>=3.8",
+    "torch>=2.0",
+    "gpytorch>=1.11",
+    "genedisco>=1.0.5",
+    "openai>=1.50",
+    "matplotlib>=3.7",
+    "seaborn>=0.12",
+]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.25"]
+browsergym = ["gymnasium>=0.29"]
+dev = ["pytest>=8.0", "ruff>=0.4"]
+
+[project.scripts]
+compare-real = "ai.experiments.compare_real:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+namespaces = true
+include = ["ai*", "maehd*", "ExperimentalDesign*"]
+exclude = ["*__pycache__*", "*.egg-info*", "ExperimentalDesign.data*"]

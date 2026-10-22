@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Data files (large, not tracked)
+ExperimentalDesign/data/
+
+# Ollama binaries & models
+ollama_dist/
+ollama_models/
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.toc
+*.out
+*.synctex.gz
+
+# LSF job outputs
+logs/
+
+# Results (large, committed selectively)
+results/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+
+paper/
+
+# Pretrained model checkpoints
+*.pt
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store

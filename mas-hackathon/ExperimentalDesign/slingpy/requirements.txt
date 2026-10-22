@@ -1,0 +1,15 @@
+# Minimal, sensible dependency suggestions for modern Python (adjust as needed).
+# These are conservative lower bounds that target stable, modern releases.
+# Verify these against your local environment and pin exact versions for reproducible installs.
+
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.2
+torch>=2.0
+h5py>=3.8
+hyperopt>=0.2.7
+
+# Optional (uncomment if used):
+# pandas>=2.0
+# tqdm>=4.65
+# matplotlib>=3.7
